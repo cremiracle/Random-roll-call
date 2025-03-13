@@ -1,13 +1,12 @@
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout,
-    QPushButton, QCheckBox, QSpinBox, QLabel, QFileDialog, QStatusBar, QSizePolicy
+    QPushButton, QCheckBox, QSpinBox, QLabel, QFileDialog, QStatusBar, QSizePolicy, QMessageBox
 )
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QFont, QPixmap
 from logic import AttendanceLogic
 import random
 import os  # 用于处理文件路径
-import img
 
 
 class MainWindow(QMainWindow):
@@ -71,9 +70,7 @@ class MainWindow(QMainWindow):
         self.image_label = QLabel()
         self.image_label.setAlignment(Qt.AlignCenter)
         self.image_label.setStyleSheet("background-color: #EEE; border: 1px solid #CCC;")
-        self.image_label.setScaledContents(True)
-        self.image_label.setPixmap(QPixmap(u":img/src/1.jpg"))
-        self.image_label.setFixedSize(150, 150)  # 设置图片控件大小
+        self.image_label.setFixedSize(100, 100)  # 设置图片控件大小
 
         # 使用 QVBoxLayout 将结果显示和图片控件放在一起
         center_widget = QWidget()
@@ -130,7 +127,6 @@ class MainWindow(QMainWindow):
         self.timer.start(100)  # 每100ms更新一次
 
     def flash_result(self):
-        font_size = int(self.width() / 30)  # 根据窗口宽度动态调整字体大小
         if self.flash_count < 30:  # 100ms * 30 = 3秒
             # 生成随机显示内容
             if self.logic.students:
@@ -148,7 +144,7 @@ class MainWindow(QMainWindow):
                 }}
                 QLabel {{
                     color: {random.choice(colors)};
-                    font-size: {font_size}px;
+                    font-size: 18px;
                     font-weight: bold;
                 }}
             """)
@@ -157,17 +153,17 @@ class MainWindow(QMainWindow):
         else:
             self.timer.stop()
             self.update_result_display(self.final_result)
-            self.result_container.setStyleSheet(f"""
-                QWidget {{
+            self.result_container.setStyleSheet("""
+                QWidget {
                     background-color: rgba(255, 255, 255, 200);
                     border-radius: 10px;
                     padding: 10px;
-                }}
-                QLabel {{
+                }
+                QLabel {
                     color: #333;
-                    font-size: {font_size}px;
+                    font-size: 18px;
                     font-weight: bold;
-                }}
+                }
             """)
             self.is_animating = False
 
@@ -176,27 +172,34 @@ class MainWindow(QMainWindow):
         for i in reversed(range(self.result_layout.count())):
             self.result_layout.itemAt(i).widget().setParent(None)
 
-        # 将显示区域划分为 3x3 的网格
-        row, col = 0, 0
-        for i, name in enumerate(names):
-            label = QLabel(name)
+        count = len(names)
+        if count == 1:
+            # 如果只抽取一个人，将名字放在正中心
+            label = QLabel(names[0])
             label.setAlignment(Qt.AlignCenter)
-            self.result_layout.addWidget(label, row, col, Qt.AlignCenter)
-            col += 1
-            if col == 3:  # 每行显示三人
-                row += 1
-                col = 0
+            self.result_layout.addWidget(label, 1, 1, Qt.AlignCenter)  # 放在网格的中心位置
+        else:
+            # 如果抽取两人及以上，按 3x3 网格布局
+            row, col = 0, 0
+            for i, name in enumerate(names):
+                label = QLabel(name)
+                label.setAlignment(Qt.AlignCenter)
+                self.result_layout.addWidget(label, row, col, Qt.AlignCenter)
+                col += 1
+                if col == 3:  # 每行显示三人
+                    row += 1
+                    col = 0
 
-        # 如果抽取人数不足 9 人，填充空标签
-        total_cells = 9
-        for i in range(len(names), total_cells):
-            spacer = QLabel("")
-            spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-            self.result_layout.addWidget(spacer, row, col, Qt.AlignCenter)
-            col += 1
-            if col == 3:  # 每行显示三人
-                row += 1
-                col = 0
+            # 如果抽取人数不足 9 人，填充空标签
+            total_cells = 9
+            for i in range(len(names), total_cells):
+                spacer = QLabel("")
+                spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+                self.result_layout.addWidget(spacer, row, col, Qt.AlignCenter)
+                col += 1
+                if col == 3:  # 每行显示三人
+                    row += 1
+                    col = 0
 
     def resizeEvent(self, event):
         # 动态调整字体大小以适应窗口缩放
