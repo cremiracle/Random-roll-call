@@ -181,7 +181,7 @@ class MainWindow(QMainWindow):
             self.timer.stop()
             self.update_result_display(self.final_result)
             if len(self.final_result) == 1:
-                if self.final_result[0] == '王十一':
+                if self.final_result[0] == '苟鑫泓':
                     self.image_label.setPixmap(QPixmap(":/img/src/3.jpg"))
                 else:
                     self.image_label.setPixmap(QPixmap(":/img/src/2.jpg"))
