@@ -132,10 +132,10 @@ class MainWindow(QMainWindow):
             self.save_last_file(file_name)
 
     def handle_start(self):
+        self.image_label.setPixmap(QPixmap(":/img/src/1.jpg"))
         if self.is_animating:
             return
 
-        # count = self.spin_box.value()
         count = int(self.combo_box.currentText())
         allow_repeat = self.allow_repeat.isChecked()
         result = self.logic.random_select(count, allow_repeat)
@@ -148,7 +148,8 @@ class MainWindow(QMainWindow):
         # 初始化动画参数
         self.is_animating = True
         self.flash_count = 0
-        self.timer.start(100)  # 每100ms更新一次
+        self.timer.start(150)  # 每100ms更新一次
+
 
     def flash_result(self):
         font_size = int(self.width() / 30)  # 根据窗口宽度动态调整字体大小
@@ -179,6 +180,11 @@ class MainWindow(QMainWindow):
         else:
             self.timer.stop()
             self.update_result_display(self.final_result)
+            if len(self.final_result) == 1:
+                if self.final_result[0] == '王十一':
+                    self.image_label.setPixmap(QPixmap(":/img/src/3.jpg"))
+                else:
+                    self.image_label.setPixmap(QPixmap(":/img/src/2.jpg"))
             self.result_container.setStyleSheet(f"""
                 QWidget {{
                     background-color: rgba(255, 255, 255, 200);
@@ -204,6 +210,7 @@ class MainWindow(QMainWindow):
             label = QLabel(names[0])
             label.setAlignment(Qt.AlignCenter)
             self.result_layout.addWidget(label, 1, 1, Qt.AlignCenter)  # 放在网格的中心位置
+
         else:
             # 如果抽取两人及以上，按 3x3 网格布局
             row, col = 0, 0
