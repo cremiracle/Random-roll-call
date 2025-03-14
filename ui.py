@@ -6,6 +6,7 @@ from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QFont, QPixmap, QScreen
 from logic import AttendanceLogic
 from PySide6.QtWidgets import QApplication
+from PySide6.QtGui import QIcon
 import random
 import configparser
 import os  # 用于处理文件路径
@@ -38,6 +39,7 @@ class MainWindow(QMainWindow):
         # self.setGeometry(100, 100, 1600, 900)  # 初始窗口大小
         self.setGeometry(100, 100, x, y)
         self.setMinimumSize(800, 600)
+        self.setWindowIcon(QIcon(":/img/src/33.ico"))
 
         # 主布局
         main_widget = QWidget()

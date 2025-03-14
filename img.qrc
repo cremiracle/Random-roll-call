@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="img">
+    <file>src/33.ico</file>
     <file>src/1.jpg</file>
     <file>src/2.jpg</file>
     <file>src/3.jpg</file>
